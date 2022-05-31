@@ -31,20 +31,23 @@ r.all("/register", async (req: Req, res: Res) => {
     return;
   }
 
-  users.insertOne({
+  let resData: Record<any, any> = {};
+
+  await users.insertOne({
     fullname: body.fullname,
     username: body.username,
     password: body.password,
   }).then((e) => {
-    
+    resData.status = true
+    resData.massage = "register successful"
   }).catch((e) => {
-
+    resData.status = false
+    resData.exist = true
+    resData.massage = "username already exist"
   });
 
-  res.reply = JSON.stringify({
-    status: true,
-    api: "register",
-  });
+  res.reply = JSON.stringify(resData);
+
 });
 
 export default r;
