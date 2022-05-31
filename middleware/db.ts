@@ -9,7 +9,7 @@ const client = new MongoClient();
 
 // Connecting to a Local Database
 await client.connect("mongodb://127.0.0.1:27017");
-let db = client.database("invoice");
+let db = client.database("note");
 
 export type { ObjectId, Document };
 export { db };
