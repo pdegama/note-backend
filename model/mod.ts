@@ -1,7 +1,4 @@
-import users from "./user.ts"
-import token from "./token.ts"
+import users from "./user.ts";
+import tokens from "./token.ts";
 
-export {
-  users,
-  token
-}
+export { tokens, users };
