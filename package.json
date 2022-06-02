@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "uuid-token-generator": "^1.0.0"
+  }
+}
