@@ -1,6 +1,6 @@
 import { Req, Res, Router } from "https://deno.land/x/denorest@v2.1/mod.ts";
-import {jsonCheck, uuid} from "../middleware/mod.ts"
-import { token, users } from "../model/mod.ts";
+import { jsonCheck, uuid } from "../middleware/mod.ts";
+import { tokens, users } from "../model/mod.ts";
 
 let r = new Router();
 type ResData = Record<any, any>;
@@ -24,18 +24,29 @@ r.all("/login", async (req: Req, res: Res) => {
     return;
   }
 
+  let username = body.username.toLowerCase();
+
   let u = await users.findOne({
-    username: body.username.toLowerCase(),
+    username: username,
     password: body.password,
   });
 
   let resData: ResData = {};
 
   if (u) {
-    let t = uuid.generate();
+    let token = uuid.generate();
 
-    resData.status = true;
-    resData.massage = "Login Successfu!";
+    await tokens.insertOne({
+      username,
+      token,
+    }).then((e) => {
+      resData.status = true;
+      resData.token = token;
+      resData.massage = "Login Successfu!";
+    }).catch((e) => {
+      resData.status = false;
+      resData.massage = "Server Error";
+    });
   } else {
     resData.status = false;
     resData.massage = "Username or Password is invalid!";
