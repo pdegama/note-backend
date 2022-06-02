@@ -1,4 +1,4 @@
-import { db, ObjectId } from "../middleware/db.ts";
+import { db, ObjectId } from "../middleware/mod.ts";
 
 interface UserSchema {
   _id: ObjectId;
