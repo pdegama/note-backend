@@ -35,7 +35,7 @@ r.all("/register", async (req: Req, res: Res) => {
 
   await users.insertOne({
     fullname: body.fullname,
-    username: body.username,
+    username: body.username.toLowerCase(),
     password: body.password,
   }).then((e) => {
     resData.status = true
