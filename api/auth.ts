@@ -76,6 +76,28 @@ r.all("/login", async (req: Req, res: Res) => {
   res.reply = JSON.stringify(resData);
 });
 
+// logout handler
+r.all("/logout", async (req: Req, res: Res) => {
+  let token = req.headers?.get("token");
+
+  if (!token) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "token not found",
+    });
+    return;
+  }
+
+  await tokens.deleteOne({
+    token
+  })
+  
+  res.reply = JSON.stringify({
+    status: true,
+    api: "logout success"
+  });
+})
+
 // register handler
 r.all("/register", async (req: Req, res: Res) => {
   let body = await jsonCheck(req, ["fullname", "username", "password"]);
