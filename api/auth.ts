@@ -6,10 +6,31 @@ let r = new Router();
 type ResData = Record<any, any>;
 
 // auth handler
-r.all("/", (req: Req, res: Res) => {
+r.all("/", async (req: Req, res: Res) => {
+  let token = req.headers?.get("token");
+
+  if (!token) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "token not found",
+    });
+    return;
+  }
+
+  let u = await tokens.findOne({ token });
+
+  if (!u) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "login error",
+    });
+    return;
+  }
+
   res.reply = JSON.stringify({
     status: true,
-    api: "auth",
+    api: "login success",
+    username: u.username
   });
 });
 
