@@ -110,6 +110,7 @@ r.all("/read/:id", async (req: Req, res: Res) => {
         resData.html = note.html
         resData.tags = note.tags
         resData.edit = true
+        resData.visible = note.visible
       } else {
         resData.status = false;
         resData.massage = "not found"
@@ -121,6 +122,7 @@ r.all("/read/:id", async (req: Req, res: Res) => {
       resData.html = note.html
       resData.tags = note.tags
       resData.edit = note.username === u.username
+      resData.visible = note.visible
     }
   } else {
     resData.status = false;
