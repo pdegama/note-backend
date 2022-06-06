@@ -1,6 +1,7 @@
-import { Req, Res, Router } from "https://deno.land/x/denorest@v2.1/mod.ts";
+import { Req, Res, Router, pathParse } from "https://deno.land/x/denorest@v2.1/mod.ts";
 import { jsonCheck, Tags } from "../middleware/mod.ts";
 import { tokens, notes } from "../model/mod.ts";
+import { ObjectId } from "https://deno.land/x/mongo@v0.30.0/mod.ts";
 
 let r = new Router();
 type ResData = Record<any, any>;
@@ -16,7 +17,7 @@ r.all("/new", async (req: Req, res: Res) => {
     });
     return;
   }
-  
+
   let u = await tokens.findOne({ token });
 
   if (!u) {
@@ -53,6 +54,51 @@ r.all("/new", async (req: Req, res: Res) => {
     resData.exist = true;
     resData.massage = "note add error";
   });
+
+  res.reply = JSON.stringify(resData);
+})
+
+r.all("/read/:id", async (req: Req, res: Res) => {
+
+  let p = pathParse(req)
+  let id = p.params.id
+
+  let token = req.headers?.get("token");
+
+  if (!token) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "token not found",
+    });
+    return;
+  }
+
+  let u = await tokens.findOne({ token });
+
+  if (!u) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "login error",
+    });
+    return;
+  }
+
+  let note = await notes.findOne({
+    _id: new ObjectId(id),
+    username: u.username
+  })
+
+  let resData: ResData = {};
+  if (note) {
+    resData.status = true;
+    resData.massage = "note found successful"
+    resData.title = note.title,
+    resData.html = note.html,
+    resData.tags = note.tags
+  } else {
+    resData.status = false;
+    resData.massage = "not found"
+  }
   
   res.reply = JSON.stringify(resData);
 })
