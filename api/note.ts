@@ -83,8 +83,19 @@ r.all("/read/:id", async (req: Req, res: Res) => {
     return;
   }
 
+  let i
+  try {
+    i = new ObjectId(id);
+  } catch (e) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "id error",
+    });
+    return;
+  }
+
   let note = await notes.findOne({
-    _id: new ObjectId(id),
+    _id: i,
     username: u.username
   })
 
@@ -93,13 +104,13 @@ r.all("/read/:id", async (req: Req, res: Res) => {
     resData.status = true;
     resData.massage = "note found successful"
     resData.title = note.title,
-    resData.html = note.html,
-    resData.tags = note.tags
+      resData.html = note.html,
+      resData.tags = note.tags
   } else {
     resData.status = false;
     resData.massage = "not found"
   }
-  
+
   res.reply = JSON.stringify(resData);
 })
 
