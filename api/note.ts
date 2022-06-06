@@ -28,7 +28,7 @@ r.all("/new", async (req: Req, res: Res) => {
     return;
   }
 
-  let body = await jsonCheck(req, ["title", "html", "tags"]);
+  let body = await jsonCheck(req, ["title", "html", "tags", "visible"]);
   if (body.invalid) {
     res.reply = JSON.stringify({
       status: false,
@@ -43,8 +43,10 @@ r.all("/new", async (req: Req, res: Res) => {
   await notes.insertOne({
     username: u.username,
     title: body.title,
+    date: new Date(),
     html: body.html,
-    tags: tags.get()
+    tags: tags.get(),
+    visible: body.visible === "true"
   }).then((e) => {
     resData.status = true;
     resData.massage = "note add successful";
@@ -95,17 +97,31 @@ r.all("/read/:id", async (req: Req, res: Res) => {
   }
 
   let note = await notes.findOne({
-    _id: i,
-    username: u.username
+    _id: i
   })
 
   let resData: ResData = {};
   if (note) {
-    resData.status = true;
-    resData.massage = "note found successful"
-    resData.title = note.title,
-      resData.html = note.html,
+    if (note.visible) {
+      if (note.username === u.username) {
+        resData.status = true;
+        resData.massage = "note found successful"
+        resData.title = note.title
+        resData.html = note.html
+        resData.tags = note.tags
+        resData.edit = true
+      } else {
+        resData.status = false;
+        resData.massage = "not found"
+      }
+    } else {
+      resData.status = true;
+      resData.massage = "note found successful"
+      resData.title = note.title
+      resData.html = note.html
       resData.tags = note.tags
+      resData.edit = note.username === u.username
+    }
   } else {
     resData.status = false;
     resData.massage = "not found"
