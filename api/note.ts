@@ -6,6 +6,7 @@ import { ObjectId } from "https://deno.land/x/mongo@v0.30.0/mod.ts";
 let r = new Router();
 type ResData = Record<any, any>;
 
+// new note handler
 r.all("/new", async (req: Req, res: Res) => {
 
   let token = req.headers?.get("token");
@@ -60,6 +61,7 @@ r.all("/new", async (req: Req, res: Res) => {
   res.reply = JSON.stringify(resData);
 })
 
+// read note handler
 r.all("/read/:id", async (req: Req, res: Res) => {
 
   let p = pathParse(req)
@@ -127,6 +129,86 @@ r.all("/read/:id", async (req: Req, res: Res) => {
   } else {
     resData.status = false;
     resData.massage = "not found"
+  }
+
+  res.reply = JSON.stringify(resData);
+})
+
+// edit note handler
+r.all("/edit/:id", async (req: Req, res: Res) => {
+  let p = pathParse(req)
+  let id = p.params.id
+
+  let token = req.headers?.get("token");
+
+  if (!token) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "token not found",
+    });
+    return;
+  }
+
+  let u = await tokens.findOne({ token });
+
+  if (!u) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "login error",
+    });
+    return;
+  }
+
+  let i
+  try {
+    i = new ObjectId(id);
+  } catch (e) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "id error",
+    });
+    return;
+  }
+
+  let note = await notes.findOne({
+    _id: i,
+    username: u.username
+  })
+
+  if (!note) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "post not found",
+    });
+    return;
+  }
+
+  let body = await jsonCheck(req, ["title", "html", "tags", "visible"]);
+  if (body.invalid) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "field error",
+    });
+    return;
+  }
+
+  // console.log(body);
+
+  // update note
+  let resData: ResData = {};
+  let tags = new Tags(body.tags)
+
+  const { matchedCount, modifiedCount, upsertedId } = await notes.updateOne(
+    { _id: { $eq: i } },
+    { $set: { title: body.title, html: body.html, tags: tags.get(), visible: body.visible === "true" } },
+  );
+
+  if (matchedCount) {
+    resData.status = true
+    resData.massage = "update successful"
+  } else {
+    resData.status = false
+    resData.massage = "server error"
   }
 
   res.reply = JSON.stringify(resData);
