@@ -5,7 +5,7 @@ import {
   Router,
 } from "https://deno.land/x/denorest@v2.1/mod.ts";
 import { jsonCheck, Tags } from "../middleware/mod.ts";
-import { notes, tokens } from "../model/mod.ts";
+import { notes, tokens, users } from "../model/mod.ts";
 import { ObjectId } from "https://deno.land/x/mongo@v0.30.0/mod.ts";
 
 let r = new Router();
@@ -105,6 +105,19 @@ r.all("/read/:id", async (req: Req, res: Res) => {
     _id: i,
   });
 
+  
+  let user = await users.findOne({
+    username: note?.username
+  });
+  
+  if (!user) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "server error",
+    });
+    return;
+  }
+
   let resData: ResData = {};
   if (note) {
     if (note.visible) {
@@ -115,6 +128,7 @@ r.all("/read/:id", async (req: Req, res: Res) => {
         resData.html = note.html;
         resData.tags = note.tags;
         resData.edit = true;
+        resData.fullname = user.fullname;
         resData.visible = note.visible;
       } else {
         resData.status = false;
@@ -127,6 +141,7 @@ r.all("/read/:id", async (req: Req, res: Res) => {
       resData.html = note.html;
       resData.tags = note.tags;
       resData.edit = note.username === u.username;
+      resData.fullname = user.fullname;
       resData.visible = note.visible;
     }
   } else {
