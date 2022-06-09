@@ -30,7 +30,7 @@ r.all("/", async (req: Req, res: Res) => {
   res.reply = JSON.stringify({
     status: true,
     api: "login success",
-    username: u.username
+    username: u.username,
   });
 });
 
@@ -89,14 +89,14 @@ r.all("/logout", async (req: Req, res: Res) => {
   }
 
   await tokens.deleteOne({
-    token
-  })
-  
+    token,
+  });
+
   res.reply = JSON.stringify({
     status: true,
-    api: "logout success"
+    api: "logout success",
   });
-})
+});
 
 // register handler
 r.all("/register", async (req: Req, res: Res) => {

@@ -1,6 +1,11 @@
-import { Req, Res, Router, pathParse } from "https://deno.land/x/denorest@v2.1/mod.ts";
+import {
+  pathParse,
+  Req,
+  Res,
+  Router,
+} from "https://deno.land/x/denorest@v2.1/mod.ts";
 import { jsonCheck, Tags } from "../middleware/mod.ts";
-import { tokens, notes } from "../model/mod.ts";
+import { notes, tokens } from "../model/mod.ts";
 import { ObjectId } from "https://deno.land/x/mongo@v0.30.0/mod.ts";
 
 let r = new Router();
@@ -8,7 +13,6 @@ type ResData = Record<any, any>;
 
 // new note handler
 r.all("/new", async (req: Req, res: Res) => {
-
   let token = req.headers?.get("token");
 
   if (!token) {
@@ -40,14 +44,14 @@ r.all("/new", async (req: Req, res: Res) => {
 
   // add note
   let resData: ResData = {};
-  let tags = new Tags(body.tags)
+  let tags = new Tags(body.tags);
   await notes.insertOne({
     username: u.username,
     title: body.title,
     date: new Date(),
     html: body.html,
     tags: tags.get(),
-    visible: body.visible === "true"
+    visible: body.visible === "true",
   }).then((e) => {
     resData.status = true;
     resData.massage = "note add successful";
@@ -59,85 +63,12 @@ r.all("/new", async (req: Req, res: Res) => {
   });
 
   res.reply = JSON.stringify(resData);
-})
+});
 
 // read note handler
 r.all("/read/:id", async (req: Req, res: Res) => {
-
-  let p = pathParse(req)
-  let id = p.params.id
-
-  let token = req.headers?.get("token");
-
-  if (!token) {
-    res.reply = JSON.stringify({
-      status: false,
-      api: "token not found",
-    });
-    return;
-  }
-
-  let u = await tokens.findOne({ token });
-
-  if (!u) {
-    res.reply = JSON.stringify({
-      status: false,
-      api: "login error",
-    });
-    return;
-  }
-
-  let i
-  try {
-    i = new ObjectId(id);
-  } catch (e) {
-    res.reply = JSON.stringify({
-      status: false,
-      api: "id error",
-    });
-    return;
-  }
-
-  let note = await notes.findOne({
-    _id: i
-  })
-
-  let resData: ResData = {};
-  if (note) {
-    if (note.visible) {
-      if (note.username === u.username) {
-        resData.status = true;
-        resData.massage = "note found successful"
-        resData.title = note.title
-        resData.html = note.html
-        resData.tags = note.tags
-        resData.edit = true
-        resData.visible = note.visible
-      } else {
-        resData.status = false;
-        resData.massage = "not found"
-      }
-    } else {
-      resData.status = true;
-      resData.massage = "note found successful"
-      resData.title = note.title
-      resData.html = note.html
-      resData.tags = note.tags
-      resData.edit = note.username === u.username
-      resData.visible = note.visible
-    }
-  } else {
-    resData.status = false;
-    resData.massage = "not found"
-  }
-
-  res.reply = JSON.stringify(resData);
-})
-
-// edit note handler
-r.all("/edit/:id", async (req: Req, res: Res) => {
-  let p = pathParse(req)
-  let id = p.params.id
+  let p = pathParse(req);
+  let id = p.params.id;
 
   let token = req.headers?.get("token");
 
@@ -159,7 +90,7 @@ r.all("/edit/:id", async (req: Req, res: Res) => {
     return;
   }
 
-  let i
+  let i;
   try {
     i = new ObjectId(id);
   } catch (e) {
@@ -172,8 +103,80 @@ r.all("/edit/:id", async (req: Req, res: Res) => {
 
   let note = await notes.findOne({
     _id: i,
-    username: u.username
-  })
+  });
+
+  let resData: ResData = {};
+  if (note) {
+    if (note.visible) {
+      if (note.username === u.username) {
+        resData.status = true;
+        resData.massage = "note found successful";
+        resData.title = note.title;
+        resData.html = note.html;
+        resData.tags = note.tags;
+        resData.edit = true;
+        resData.visible = note.visible;
+      } else {
+        resData.status = false;
+        resData.massage = "not found";
+      }
+    } else {
+      resData.status = true;
+      resData.massage = "note found successful";
+      resData.title = note.title;
+      resData.html = note.html;
+      resData.tags = note.tags;
+      resData.edit = note.username === u.username;
+      resData.visible = note.visible;
+    }
+  } else {
+    resData.status = false;
+    resData.massage = "not found";
+  }
+
+  res.reply = JSON.stringify(resData);
+});
+
+// edit note handler
+r.all("/edit/:id", async (req: Req, res: Res) => {
+  let p = pathParse(req);
+  let id = p.params.id;
+
+  let token = req.headers?.get("token");
+
+  if (!token) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "token not found",
+    });
+    return;
+  }
+
+  let u = await tokens.findOne({ token });
+
+  if (!u) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "login error",
+    });
+    return;
+  }
+
+  let i;
+  try {
+    i = new ObjectId(id);
+  } catch (e) {
+    res.reply = JSON.stringify({
+      status: false,
+      api: "id error",
+    });
+    return;
+  }
+
+  let note = await notes.findOne({
+    _id: i,
+    username: u.username,
+  });
 
   if (!note) {
     res.reply = JSON.stringify({
@@ -196,22 +199,29 @@ r.all("/edit/:id", async (req: Req, res: Res) => {
 
   // update note
   let resData: ResData = {};
-  let tags = new Tags(body.tags)
+  let tags = new Tags(body.tags);
 
   const { matchedCount, modifiedCount, upsertedId } = await notes.updateOne(
     { _id: { $eq: i } },
-    { $set: { title: body.title, html: body.html, tags: tags.get(), visible: body.visible === "true" } },
+    {
+      $set: {
+        title: body.title,
+        html: body.html,
+        tags: tags.get(),
+        visible: body.visible === "true",
+      },
+    },
   );
 
   if (matchedCount) {
-    resData.status = true
-    resData.massage = "update successful"
+    resData.status = true;
+    resData.massage = "update successful";
   } else {
-    resData.status = false
-    resData.massage = "server error"
+    resData.status = false;
+    resData.massage = "server error";
   }
 
   res.reply = JSON.stringify(resData);
-})
+});
 
 export default r;

@@ -1,7 +1,7 @@
-import {Router, Req, Res} from "https://deno.land/x/denorest@v2.1/mod.ts"
-import Auth from "./auth.ts"
-import Note from "./note.ts"
-import Settings from "./settings.ts"
+import { Req, Res, Router } from "https://deno.land/x/denorest@v2.1/mod.ts";
+import Auth from "./auth.ts";
+import Note from "./note.ts";
+import Settings from "./settings.ts";
 
 let r = new Router();
 
@@ -10,7 +10,7 @@ r.use((req: Req, res: Res) => {
   res.headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   };
 });
 
