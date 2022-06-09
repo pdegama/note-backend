@@ -31,10 +31,4 @@ r.pre("/note", Note);
 // set pref router
 r.pre("/pref", Settings);
 
-r.all("/note", (req: Req, res: Res) => {
-  res.reply = {
-    status: "assdasd",
-  };
-});
-
 export default r;
