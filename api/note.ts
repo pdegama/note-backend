@@ -131,6 +131,7 @@ r.all("/read/:id", async (req: Req, res: Res) => {
         resData.edit = true;
         resData.fullname = user.fullname;
         resData.visible = note.visible;
+        resData.date = note.date;
       } else {
         resData.status = false;
         resData.massage = "not found";
@@ -144,6 +145,7 @@ r.all("/read/:id", async (req: Req, res: Res) => {
       resData.edit = note.username === u.username;
       resData.fullname = user.fullname;
       resData.visible = note.visible;
+      resData.date = note.date;
     }
   } else {
     resData.status = false;
