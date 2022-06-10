@@ -7,6 +7,7 @@ import {
 import { jsonCheck, Tags } from "../middleware/mod.ts";
 import { notes, tokens, users } from "../model/mod.ts";
 import { ObjectId } from "https://deno.land/x/mongo@v0.30.0/mod.ts";
+import AllPost from "./all.ts";
 
 let r = new Router();
 type ResData = Record<any, any>;
@@ -238,5 +239,8 @@ r.all("/edit/:id", async (req: Req, res: Res) => {
 
   res.reply = JSON.stringify(resData);
 });
+
+// set all read router
+r.pre("/all", AllPost)
 
 export default r;
