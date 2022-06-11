@@ -1,7 +1,8 @@
-import { Req, Res, Router } from "https://deno.land/x/denorest@v2.1/mod.ts";
+import { Req, Res, Router } from "https://deno.land/x/denorest@v2.2/mod.ts";
 import Auth from "./auth.ts";
 import Note from "./note.ts";
 import Settings from "./settings.ts";
+import Pdf from  "./pdf.ts"
 
 let r = new Router();
 
@@ -30,5 +31,8 @@ r.pre("/note", Note);
 
 // set pref router
 r.pre("/pref", Settings);
+
+// set pdf router
+r.pre("/pdf", Pdf);
 
 export default r;

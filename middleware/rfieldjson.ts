@@ -1,4 +1,4 @@
-import { bodyParse, Req } from "https://deno.land/x/denorest@v2.1/mod.ts";
+import { bodyParse, Req } from "https://deno.land/x/denorest@v2.2/mod.ts";
 
 type JsonBody = Record<string, string>;
 

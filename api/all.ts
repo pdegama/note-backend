@@ -1,4 +1,4 @@
-import { Req, Res, Router } from "https://deno.land/x/denorest@v2.1/mod.ts";
+import { Req, Res, Router } from "https://deno.land/x/denorest@v2.2/mod.ts";
 import { jsonCheck, uuid } from "../middleware/mod.ts";
 import { tokens, notes } from "../model/mod.ts";
 

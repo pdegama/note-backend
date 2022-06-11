@@ -1,4 +1,4 @@
-import { WebApp, Res, Req } from "https://deno.land/x/denorest@v2.1/mod.ts"
+import { WebApp, Res, Req } from "https://deno.land/x/denorest@v2.2/mod.ts"
 import mainRouter from "./api/router.ts"
 
 let app = new WebApp()

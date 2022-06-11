@@ -3,7 +3,7 @@ import {
   Req,
   Res,
   Router,
-} from "https://deno.land/x/denorest@v2.1/mod.ts";
+} from "https://deno.land/x/denorest@v2.2/mod.ts";
 import { jsonCheck, Tags } from "../middleware/mod.ts";
 import { notes, tokens, users } from "../model/mod.ts";
 import { ObjectId } from "https://deno.land/x/mongo@v0.30.0/mod.ts";
