@@ -1,5 +1,6 @@
 {
   "tasks": {
-    "run": "deno run -A --unstable index.ts"
+    "run": "deno run -A --unstable --allow-net --allow-env --allow-read --allow-write index.ts",
+    "init": "npm i --force"
   }
 }
